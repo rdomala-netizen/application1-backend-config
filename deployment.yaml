@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1   # keep at 1: tasks are stored in memory
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: rdomala/application1-backend:v1.0.0   
+          ports:
+            - containerPort: 5001
+          readinessProbe:
+            httpGet: { path: /healthz, port: 5001 }
+          livenessProbe:
+            httpGet: { path: /healthz, port: 5001 }
+            initialDelaySeconds: 10
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 128Mi }
