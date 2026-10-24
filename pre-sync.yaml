@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-presync
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,,HookSucceeded
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: 120
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: presync
+          image: rdomala/application1-backend:v1.0.0
+          command: ["python", "-c"]
+          args:
+            - |
+              import sys
+              print("Running pre-sync checks for backend...")
+              # e.g. run DB migrations, validate config, check a dependency
+              import app   # fails fast if the new image can't even import
+              print("Pre-sync checks passed")
